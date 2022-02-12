@@ -10,8 +10,15 @@ def make_datapath_list(phase='train'):
 
 
 def train_model(net, dataloader_dict, criterior, optimizer, epochs):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("device:", device)
+
     for epoch in range(1, epochs + 1):
         print(f"Epoch {epoch}/{epochs}")
+
+        # move network to device(cpu/gpu)
+        net.to(device)
+        torch.backends.cudnn.benchmark = True
 
         for phase in ['train', 'val']:
             if phase == 'train':
@@ -26,6 +33,11 @@ def train_model(net, dataloader_dict, criterior, optimizer, epochs):
                 continue
 
             for inputs, labels in tqdm(dataloader_dict[phase]):
+                # move inputs, labels to GPU/CPU
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                # set gradient of optimizer to be zero
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase == 'train'):
