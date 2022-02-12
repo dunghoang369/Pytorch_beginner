@@ -87,9 +87,10 @@ def params_to_update(net):
 def load_model(net, model_path):
     load_weights = torch.load(model_path)
     net.load_state_dict(load_weights) # load weight vào khung layers, network chỉ là khung thui chứ chưa có giá trị
-    print(net)
-
-    for name, param in net.named_parameters():
-        print(name, param)
+    # print(net)
+    #
+    # for name, param in net.named_parameters():
+    #     print(name, param)
     # load_weights = torch.load(model_path, map_location=("cuda:0", "cpu"))
     # net.load_state_dict(load_weights)
+    return net

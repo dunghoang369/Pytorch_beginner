@@ -1,39 +1,39 @@
 from lib import *
 from config import *
-from utils import load_model
+from utils import *
 from ImageTransform import ImageTransform
 
 class_index = ["ants", "bees"]
 
-
 class Predictor():
     def __init__(self, class_index):
-        self.class_index = class_index
+        self.clas_index = class_index
 
-    def predict(self, output):
+    def predict_max(self, output): # [0.9, 0.1]
         max_id = np.argmax(output.detach().numpy())
-        return self.class_index[max_id]
+        predicted_label = self.clas_index[max_id]
+        return predicted_label
 
 
 predictor = Predictor(class_index)
 
-
 def predict(img):
-    use_pretrain = True
-    net = models.vgg16(use_pretrain)
+    # prepare network
+    use_pretrained = True
+    net = models.vgg16(pretrained=use_pretrained)
     net.classifier[6] = nn.Linear(in_features=4096, out_features=2)
     net.eval()
 
-    # Prepare model
+    # prepare model
     model = load_model(net, save_path)
 
-    # Prepare input images
+    # prepare input img
     transform = ImageTransform(resize, mean, std)
-    img_transformed = transform(img, phase='test')
-    img_transformed = img_transformed.unsqueeze_(0)
+    img = transform(img, phase="test")
+    img = img.unsqueeze_(0) # (chan, height, width) -> (1, chan, height, width)
 
-    # Predict
-    output = model(img_transformed)
-    response = predictor.predict(output)
+    # predict
+    output = model(img)
+    response = predictor.predict_max(output)
 
     return response

@@ -51,3 +51,5 @@ if __name__ == "__main__":
     net.classifier[6] = nn.Linear(in_features=4096, out_features=2)
 
     load_model(net, save_path)
+
+
